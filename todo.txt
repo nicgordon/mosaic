@@ -1,0 +1,24 @@
+todo: 
+ - admin upload area
+   - resize image to number of images required
+   - examine each pixel for colour and create a database entry for each
+ - viewing area (just a table for now with the correct amount of rows/cols)
+   - should load any information available from the db into each cell (colour req)
+   - should load any images in their correct spots
+ - upload area
+   - detect square pixel ratio
+   - detect main colour
+   - scan database for required colours and find a cell for the image (colour within range)
+   - update database cell information
+   - rename and relocate image
+
+ stack: 
+
+ node-inspector
+ express
+ spark2? (front end for node servers)
+ connect-mongodb
+ mongoose
+ backbone? (client and server controller framework)
+ socket.io
+ imagemagick?
