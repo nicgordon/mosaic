@@ -33,7 +33,8 @@ app.get('/upload', upload.upload);
 app.post('/upload', upload.receive);
 app.get('/show', upload.show);
 app.get('/admin/upload', admin.upload);
-app.post('/admin/upload', admin.process);
+app.post('/admin/confirm', admin.process);
+app.post('/admin/finish', admin.confirm);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
