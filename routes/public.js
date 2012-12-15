@@ -22,9 +22,10 @@ function process(req, res) {
     return;
   };
 
-  var inputPath = req.files.tile_image.path,
+  var mosaicId = req.body.mosaic_id,
+    inputPath = req.files.tile_image.path,
     filename = Date.now(),
-    localPath = "./public/mosaics/" + req.body.mosaic_id + "/" + filename + ".png";
+    localPath = "./public/mosaics/" + mosaicId + "/" + filename + ".png";
 
   fs.rename(inputPath, localPath, function(err) {
     if (err) throw err;
@@ -73,9 +74,22 @@ function process(req, res) {
 
         // tile.save();
 
-      output = 'The dominant colour of this image was: ' + hex;
+        console.log('hex is : ' + hex);
 
-      res.render('process', { colour: hex });
+
+      // Find the tiles in the mosaic specified that are of the same colour in the image uploaded
+      // TODO - Make this a range of similar colours, but for now only search for exact
+      Tile.find({ mosaic_id: mosaicId, colour: hex }, function (err, tiles) {
+        if (tiles.length === 0) {
+          res.send('Unfortunately there were no empty spaces in this mosaic of that colour. Check the listogram before uploading to see what is still needed!');
+        } else {
+
+          var selectedIndex = Math.floor(Math.random() * tiles.length),
+            selectedTile = tiles[selectedIndex];
+
+          res.send('We found a tile! It is in position ' + selectedTile.x + ',' + selectedTile.y);
+        }
+      });
     };
 
     img.src = localPath;
