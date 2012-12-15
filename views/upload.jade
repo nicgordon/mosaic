@@ -3,8 +3,9 @@ extends layout
 block content
 	h1= title
 
-	form(method='post',enctype='multipart/form-data')
-		input(name='photo', type='file')
+	form(method='post',action='upload',enctype='multipart/form-data')
+		input(name='tile_image', type='file')
+		input(name='mosaic_id', type='hidden', value='' + mosaic_id)
 		input(type='submit')
 
 block footer 

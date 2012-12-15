@@ -5,7 +5,7 @@
 
 var express = require('express')
   , routes = require('./routes')
-  , upload = require('./routes/upload')
+  , public = require('./routes/public')
   , admin = require('./routes/admin')
   , http = require('http')
   , path = require('path')
@@ -33,9 +33,9 @@ app.configure('development', function(){
 var db = mongoose.connect('mongodb://localhost/mosaicdev');
 
 app.get('/', routes.index);
-app.get('/upload', upload.upload);
-app.post('/upload', upload.receive);
-app.get('/show', upload.show);
+app.get('/upload', public.upload);
+app.post('/upload', public.process);
+app.get('/show', public.show);
 app.get('/admin/upload', admin.upload);
 app.post('/admin/confirm', admin.process);
 app.post('/admin/finish', admin.confirm);
