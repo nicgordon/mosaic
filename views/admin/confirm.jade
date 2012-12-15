@@ -5,13 +5,27 @@ block content
 
 	p You're halfway to starting your mosaic! We just need a name for it, and a description of what it contains.
 
-	img(src='/images/' + imageName)
+	img(src='/mosaics/' + imageName)
 
-	form(method='post',enctype='multipart/form-data')
-		input(name='title', type='text')
-		input(name='description', type='text')
+	form(method='post', enctype='multipart/form-data', action='finish')
 		input(name='mosaic_image', type='hidden', value=imageName)
-		input(type='submit')
+
+		table
+			tr
+				td Title
+				td 
+					input(name='title', type='text')
+			tr
+				td Author
+				td 
+					input(name='author', type='text')
+			tr
+				td Description
+				td 
+					input(name='description', type='text')
+			tr
+				td(colspan='2') 
+					input(type='submit')
 
 block footer 
 	p 

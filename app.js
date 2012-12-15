@@ -8,7 +8,8 @@ var express = require('express')
   , upload = require('./routes/upload')
   , admin = require('./routes/admin')
   , http = require('http')
-  , path = require('path');
+  , path = require('path')
+  , mongoose = require('mongoose');
 
 var app = express();
 
@@ -28,6 +29,9 @@ app.configure('development', function(){
   app.use(express.errorHandler());
 });
 
+// Create a connection to the database
+var db = mongoose.connect('mongodb://localhost/mosaicdev');
+
 app.get('/', routes.index);
 app.get('/upload', upload.upload);
 app.post('/upload', upload.receive);
@@ -35,6 +39,8 @@ app.get('/show', upload.show);
 app.get('/admin/upload', admin.upload);
 app.post('/admin/confirm', admin.process);
 app.post('/admin/finish', admin.confirm);
+app.get('/admin/list', admin.list);
+app.get('/admin/listtiles', admin.listtiles);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));

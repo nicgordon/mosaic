@@ -1,0 +1,10 @@
+extends ../layout
+
+block content
+	h1= title
+
+	p Your mosaic has been uploaded successfully! At the moment it looks a little blank... You can contribute to it 
+	a(href='../upload?mosaic=' + mosaic_id) here
+
+block footer 
+	p 
