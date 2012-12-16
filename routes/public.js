@@ -5,7 +5,7 @@ var fs = require("fs"),
     // Models
     Tile = require('../models/tile');
 
-exports.upload = function(req, res){
+function upload(req, res){
   res.render("upload", { title: "Upload", mosaic_id: req.query.mosaic });
 };
 
@@ -24,8 +24,8 @@ function process(req, res) {
 
   var mosaicId = req.body.mosaic_id,
     inputPath = req.files.tile_image.path,
-    filename = Date.now(),
-    localPath = "./public/mosaics/" + mosaicId + "/" + filename + ".png";
+    filename = Date.now() + '.png',
+    localPath = "./public/mosaics/" + mosaicId + "/" + filename;
 
   fs.rename(inputPath, localPath, function(err) {
     if (err) throw err;
@@ -74,20 +74,24 @@ function process(req, res) {
 
         // tile.save();
 
-        console.log('hex is : ' + hex);
-
-
       // Find the tiles in the mosaic specified that are of the same colour in the image uploaded
       // TODO - Make this a range of similar colours, but for now only search for exact
       Tile.find({ mosaic_id: mosaicId, colour: hex }, function (err, tiles) {
         if (tiles.length === 0) {
+          // Image is not needed so discard it
+          fs.unlink(localPath, function() {
+            if (err) throw err;
+          });
+
           res.send('Unfortunately there were no empty spaces in this mosaic of that colour. Check the listogram before uploading to see what is still needed!');
         } else {
 
           var selectedIndex = Math.floor(Math.random() * tiles.length),
             selectedTile = tiles[selectedIndex];
 
-          res.send('We found a tile! It is in position ' + selectedTile.x + ',' + selectedTile.y);
+          console.log('We found a free tile! It is in position ' + selectedTile.x + ',' + selectedTile.y);
+
+          res.render('confirm', { title: 'Just a few more details...', imageName: filename, mosaicId: mosaicId, tileId: selectedTile._id });
         }
       });
     };
@@ -98,45 +102,62 @@ function process(req, res) {
 
 function confirm(req, res) {
 
+  // Filename is received from the post variables
+  var filename = req.body.tile_image,
+    mosaicId = req.body.mosaic_id,
+    tileId = req.body.tile_id;
 
-};
+  var tile = Tile.findOne({ _id: tileId }, function (err, theTile) {
 
+    tile.author = req.body.author;
+    tile.title = req.body.title;
+    tile.image = filename;
+    tile.uploaded = Date.now;
 
+    tile.save();
 
-
-function receive(req, res) {
-  console.log("Request handler 'upload' was called.");
-
-  // get the temporary location of the file
-  var tmp_path = req.files.photo.path;
-  // set where the file should actually exists - in this case it is in the "images" directory
-  var target_path = './public/images/' + req.files.photo.name;
-  // move the file from the temporary location to the intended location
-  fs.rename(tmp_path, target_path, function(err) {
-      if (err) throw err;
-      // delete the temporary file, so that the explicitly set temporary upload dir does not get filled with unwanted files
-      fs.unlink(tmp_path, function() {
-          if (err) throw err;
-          res.send('File uploaded to: ' + target_path + ' - ' + req.files.photo.size + ' bytes');
-      });
+    res.send('Operation: Great success.')
   });
 };
 
-function show(response) {
-  console.log("Request handler 'show' was called.");
-  fs.readFile("/tmp/test.png", "binary", function(error, file) {
-    if(error) {
-      response.writeHead(500, {"Content-Type": "text/plain"});
-      response.write(error + "\n");
-      response.end();
-    } else {
-      response.writeHead(200, {"Content-Type": "image/png"});
-      response.write(file, "binary");
-      response.end();
-    }
-  });
-};
 
-exports.receive = receive;
-exports.show = show;
+
+
+// function receive(req, res) {
+//   console.log("Request handler 'upload' was called.");
+
+//   // get the temporary location of the file
+//   var tmp_path = req.files.photo.path;
+//   // set where the file should actually exists - in this case it is in the "images" directory
+//   var target_path = './public/images/' + req.files.photo.name;
+//   // move the file from the temporary location to the intended location
+//   fs.rename(tmp_path, target_path, function(err) {
+//       if (err) throw err;
+//       // delete the temporary file, so that the explicitly set temporary upload dir does not get filled with unwanted files
+//       fs.unlink(tmp_path, function() {
+//           if (err) throw err;
+//           res.send('File uploaded to: ' + target_path + ' - ' + req.files.photo.size + ' bytes');
+//       });
+//   });
+// };
+
+// function show(response) {
+//   console.log("Request handler 'show' was called.");
+//   fs.readFile("/tmp/test.png", "binary", function(error, file) {
+//     if(error) {
+//       response.writeHead(500, {"Content-Type": "text/plain"});
+//       response.write(error + "\n");
+//       response.end();
+//     } else {
+//       response.writeHead(200, {"Content-Type": "image/png"});
+//       response.write(file, "binary");
+//       response.end();
+//     }
+//   });
+// };
+
+// exports.receive = receive;
+// exports.show = show;
+exports.upload = upload;
 exports.process = process;
+exports.finish = finish;

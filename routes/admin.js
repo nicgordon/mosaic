@@ -87,58 +87,72 @@ function confirm(req, res) {
 
 	mosaic.save();
 
-	img.onerror = function(err) {
-		throw err;
-	};
+	var mosaicDir = './public/mosaics/' + mosaic._id + '/',
+		finalPath = mosaicDir + filename;
 
-	img.onload = function () {
-		// Resize the image
-		var canvas = new Canvas(img.width, img.height),
-			ctx = canvas.getContext('2d');
+	// Create a directory for the images that will make up this mosaic
+	fs.mkdir(mosaicDir, function () {
 
-		ctx.drawImage(img,0,0,img.width,img.height);
+		// Move the mosaic images into the mosaic directory
+		// TODO - Move both images (_orig as well) and give them a mosaic prefix
 
-		// Get the image colour information
-		var data = ctx.getImageData(0, 0, img.width, img.height).data;		
-		var red, blue, green, alpha, hexaString, hexa, hex, output = "", row = 1, col = 0;
+		fs.rename(localPath, finalPath, function(err) {
 
-		for (i = 0; i < data.length; i += 4) {
+			img.onerror = function(err) {
+				throw err;
+			};
 
-			if (col === img.width) {
+			img.onload = function () {
+				// Resize the image
+				var canvas = new Canvas(img.width, img.height),
+					ctx = canvas.getContext('2d');
 
-				col = 0;
-				row++;
-			}
+				ctx.drawImage(img,0,0,img.width,img.height);
 
-			col++;
+				// Get the image colour information
+				var data = ctx.getImageData(0, 0, img.width, img.height).data;		
+				var red, blue, green, alpha, hexaString, hexa, hex, output = "", row = 1, col = 0;
 
-			red = data[i];
-			green = data[i + 1];
-			blue = data[i + 2];
-			alpha = data[i + 3];
+				for (i = 0; i < data.length; i += 4) {
 
-			hexaString = (red * 0x1000000 + green * 0x10000 + blue * 0x100 + alpha).toString(16);
-			hexa = '#' + ('0000000'.substr(0, 8 - hexaString.length)) + hexaString;
-			hex = hexa.substr(0, 7);
+					if (col === img.width) {
 
-			var tile = new Tile({
-				mosaic_id: mosaic._id,
-				x: col,
-				y: row,
-				colour: hex
-			});
+						col = 0;
+						row++;
+					}
 
-			tile.save();
+					col++;
 
-			output += "row: " + row + ", col: " + col + " - " + hex + "<br />";
+					red = data[i];
+					green = data[i + 1];
+					blue = data[i + 2];
+					alpha = data[i + 3];
 
-		}
+					hexaString = (red * 0x1000000 + green * 0x10000 + blue * 0x100 + alpha).toString(16);
+					hexa = '#' + ('0000000'.substr(0, 8 - hexaString.length)) + hexaString;
+					hex = hexa.substr(0, 7);
 
-		res.render('admin/finish', { title: 'Finished uploading mosaic!', mosaic_id: mosaic._id });
-	};
+					var tile = new Tile({
+						mosaic_id: mosaic._id,
+						x: col,
+						y: row,
+						colour: hex
+					});
 
-	img.src = localPath;
+					tile.save();
 
+					output += "row: " + row + ", col: " + col + " - " + hex + "<br />";
+
+				}
+
+				res.render('admin/finish', { title: 'Finished uploading mosaic!', mosaic_id: mosaic._id });
+			};
+
+			img.src = finalPath;
+
+
+		});
+	});
 };
 
 function list(req, res) {

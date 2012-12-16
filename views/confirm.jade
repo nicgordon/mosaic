@@ -1,0 +1,29 @@
+extends ../layout
+
+block content
+	h1= title
+
+	p Your photo found the perfect home this mosaic! We just need a few more details about the image before it is locked in:
+
+	img(src='/mosaics/' + imageName)
+
+	form(method='post', enctype='multipart/form-data', action='finish')
+		input(name='mosaic_id', type='hidden', value=mosaicId)
+		input(name='tile_id', type='hidden', value=tileId)
+		input(name='tile_image', type='hidden', value=imageName)
+
+		table
+			tr
+				td Title
+				td 
+					input(name='title', type='text')
+			tr
+				td Author
+				td 
+					input(name='author', type='text')
+			tr
+				td(colspan='2') 
+					input(type='submit')
+
+block footer 
+	p 

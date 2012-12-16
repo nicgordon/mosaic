@@ -9,6 +9,7 @@ var tileSchema = new Schema({
   colour: String,
   title: String,
   author: String,
+  title: String,
   image: String,
   uploaded: Date
 });
