@@ -1,17 +1,22 @@
 {
-  "name": "mosaic",
-  "description": "Collecting user submitted images and creating mosaics",
-  "author": "Nic Gordon <gordonna@gmail.com>",
-  "version": "0.0.1",
-  "private": true,
+  "name": "@mosaic/mosaic",
+  "version": "1.0.0",
+  "description": "Mosaic monorepo",
   "scripts": {
-    "start": "node app"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "dependencies": {
-    "express": "3.0.x",
-    "jade": "0.x.x",
-    "canvas": "0.x.x",
-    "mongodb": "1.1.x",
-    "mongoose": "3.4.x"
-  }
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nicgordon/mosaic.git"
+  },
+  "author": "Nic Gordon <hello@gor.do>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nicgordon/mosaic/issues"
+  },
+  "homepage": "https://github.com/nicgordon/mosaic#readme",
+  "private": true,
+  "workspaces": [
+    "./packages/*"
+  ]
 }
